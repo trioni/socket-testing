@@ -1,0 +1,44 @@
+doctype html
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en"><![endif]-->
+<!--[if IE 9]><html class="no-js lt-ie10" lang="en"><![endif]-->
+<!--[if gt IE 9]><!--><html class="no-js" lang="en"><!--<![endif]-->
+head
+	meta(charset="UTF-8")
+	meta(http-equiv="X-UA-Compatible", content="IE=Edge")
+	meta(name="viewport", content="width=device-width,initial-scale=1")
+	block title
+		title Socket Sandbox
+	block head
+		link(rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.5/css/bootstrap.min.css" integrity="sha384-AysaV+vQoT3kOAXZkl02PThvDr8HYKPZhNT5h/CXfBThSRXQ6jW5DO2ekP5ViFdi" crossorigin="anonymous")
+
+- var bodyAttrs = {};
+if bodyClass
+	- bodyAttrs.class = bodyClass
+body()&attributes(bodyAttrs)
+		#outer-wrapper
+			.jumbotron.jumbotron-fluid
+				.container
+					.row
+						.col-md-12
+							block jumbo
+			.container
+				block main
+
+block bodyfooter
+	script(src="https://cdn.socket.io/socket.io-1.4.5.js")
+	script.
+		var socket = io.connect();
+		var messageContainer = document.querySelector('#messages');
+		function addMessage(msg) {
+			var entry = document.createElement('li');
+			entry.innerHTML = msg.text;
+			messageContainer.append(entry);
+		}
+		socket.on('webhook', function (data) {
+			console.log('[Webhook]', data);
+			addMessage(data);
+		});
+		socket.on('connected', function (data) {
+			console.log('[connected]', data);
+			socket.emit('connected response', data);
+		});
